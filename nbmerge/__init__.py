@@ -1,9 +1,15 @@
 from __future__ import print_function
+import codecs
 import io
 import sys
 
 from nbformat import read as read_notebook
-from nbformat import writes as nb_to_str
+from nbformat import write as write_notebook
+
+# See:
+# - stackoverflow.com/a/1169209
+# - github.com/kynan/nbstripout/commit/8e26f4df317fde8b935df8e4930b32c74f834cf9
+sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
 __title__ = "nbmerge"
 __description__ = "A tool to merge / concatenate Jupyter (IPython) notebooks"
@@ -49,4 +55,4 @@ def main():
         sys.exit(1)
 
     nb = merge_notebooks(notebooks)
-    print(nb_to_str(nb))
+    write_notebook(nb, sys.stdout)
