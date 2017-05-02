@@ -26,6 +26,19 @@ __email__ = "jbn@abreka.com"
 
 
 def merge_notebooks(file_paths):
+    """
+    Merge the given notebooks into one notebook.
+
+    This function aggregates metadata in reverse order relative to the
+    ``file_paths``. It does not do so recursively. Concretely, the first
+    notebook will overwrite any keys in the metadata for notebooks 2 and
+    on; the second notebook will overwrite any keys in the metadata for
+    notebooks 3 and on; and so forth. If the second notebook has a key
+    path of metadata.ns.x which does not exist in the first notebook,
+    but the first notebook has a key path of metadata.ns.y, the second
+    data's entry is overwritten. It does not recursively descend into
+    the dictionaries.
+    """
     merged, metadata = None, []
 
     for path in file_paths:
