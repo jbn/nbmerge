@@ -9,6 +9,6 @@ python:
 install:
   - pip install .
   - pip install -r requirements.txt
-  - pip install nose
-# command to run tests
-script: nosetests
+  - pip install nose coveralls
+script: coverage run --source=nbmerge setup.py nosetests
+after_success: coveralls
