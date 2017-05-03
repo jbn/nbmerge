@@ -1,5 +1,7 @@
 .. image:: https://travis-ci.org/jbn/nbmerge.svg?branch=master
     :target: https://travis-ci.org/jbn/nbmerge
+.. image:: https://ci.appveyor.com/api/projects/status/69kj3prrrieyp8q2/branch/master?svg=true
+    :target: https://ci.appveyor.com/project/jbn/nbmerge/branch/master 
 .. image:: https://coveralls.io/repos/github/jbn/nbmerge/badge.svg?branch=master
     :target: https://coveralls.io/github/jbn/nbmerge?branch=master 
 .. image:: https://img.shields.io/pypi/dm/nbmerge.svg
