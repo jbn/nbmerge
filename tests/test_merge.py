@@ -30,7 +30,7 @@ class TestMerge(unittest.TestCase):
     def test_parse_plan(self):
         header_nb = os.path.join(FIXTURES_DIR, "Header.ipynb")
         plan = parse_plan(["-o", "myfile.ipynb",
-                           "-f", "(_|1|2)_.*",
+                           "-p", "(_|1|2)_.*",
                            "-i", "-r", "-v",
                            header_nb])
 

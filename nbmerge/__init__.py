@@ -71,16 +71,16 @@ def merge_notebooks(file_paths, verbose=False):
     return merged
 
 
-def recursive_find(ignore_underscored, filter_re):
+def recursive_find(ignore_underscored, predicate_re):
     """
     Find all notebooks relative to the cwd which match the filtering criteria.
 
     :param ignore_underscored: filter out all notebooks which begin with
-        an underscore prefix, irrespective of the filter regexp
-    :param filter_re: a filter for file name acceptance
+        an underscore prefix, irrespective of the predicate regexp
+    :param predicate_re: a filter for file name acceptance
     :return: lexicographically ordered list of notebook file paths
     """
-    filter_re = re.compile(filter_re or ".*")
+    predicate_re = re.compile(predicate_re or ".*")
 
     file_paths = []
 
@@ -96,7 +96,7 @@ def recursive_find(ignore_underscored, filter_re):
             if ignore_underscored and file_name.startswith('_'):
                 continue
 
-            if not filter_re.match(file_name):
+            if not predicate_re.match(file_name):
                 continue
 
             file_paths.append(os.path.join(dir_path, file_name))
@@ -117,7 +117,7 @@ def parse_plan(args=None):
     parser.add_argument("-o", "--output",
                         help="Write to the specified file")
 
-    parser.add_argument("-f", "--filter-re",
+    parser.add_argument("-p", "--predicate-re",
                         help="Regexp for filename acceptance")
     parser.add_argument("-i", "--ignore-underscored",
                         help="Ignore notebooks with underscore prefix",
@@ -141,7 +141,7 @@ def parse_plan(args=None):
         # If you specify any files, they are added first, in order.
         # This is useful for a header notebook of some sort.
         file_paths.extend(recursive_find(args.ignore_underscored,
-                                         args.filter_re))
+                                         args.predicate_re))
     return {'notebooks': file_paths,
             'output_file': args.output,
             'verbose': args.verbose}

@@ -48,7 +48,7 @@ named `_merged.ipynb`,
 
 .. code:: sh
 
-    nbmerge --recursive -i -f ".*intro.*" -o _merged.ipynb
+    nbmerge --recursive -i -p ".*intro.*" -o _merged.ipynb
 
 Lineage
 =======
