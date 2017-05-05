@@ -23,7 +23,21 @@ __author__ = "John Bjorn Nelson"
 __email__ = "jbn@abreka.com"
 
 
-def merge_notebooks(file_paths, verbose=False):
+def annotate_source_path(notebook, base_dir, nb_path, boundary_key):
+    """
+    Add the notebook's relative path to the cell metadata.
+
+    :param notebook: the parsed notebook object
+    :param base_dir: the base directory for this merge
+    :param nb_path: the file path to the notebook
+    :param boundary_key: the target key in the meatadata dictionary
+    """
+    cells = notebook.cells
+    if cells:
+        cells[0].metadata[boundary_key] = os.path.relpath(nb_path, base_dir)
+
+
+def merge_notebooks(base_dir, file_paths, verbose=False, boundary_key=None):
     """
     Merge the given notebooks into one notebook.
 
@@ -37,8 +51,12 @@ def merge_notebooks(file_paths, verbose=False):
     data's entry is overwritten. It does not recursively descend into
     the dictionaries.
 
+    :param base_dir: the base directory for recursion and relative path
+        calculation
     :param file_paths: the ordered file paths to the notebooks for
         concatenation
+    :param boundary_key: the key in the first cells metadata where the
+        source file_path goes
     :param verbose: if True, print message for each notebook when processing
     :return: the merged notebook
     """
@@ -54,6 +72,9 @@ def merge_notebooks(file_paths, verbose=False):
             nb = read_notebook(fp, as_version=4)
 
         metadata.append(nb.metadata)
+
+        if boundary_key:
+            annotate_source_path(nb, base_dir, path, boundary_key)
 
         if merged is None:
             merged = nb
@@ -71,10 +92,11 @@ def merge_notebooks(file_paths, verbose=False):
     return merged
 
 
-def recursive_find(ignore_underscored, predicate_re):
+def recursive_find(base_dir, ignore_underscored, predicate_re):
     """
-    Find all notebooks relative to the cwd which match the filtering criteria.
+    Find notebooks relative to the base dir which match the filtering criteria.
 
+    :param base_dir: the base directory for the search
     :param ignore_underscored: filter out all notebooks which begin with
         an underscore prefix, irrespective of the predicate regexp
     :param predicate_re: a filter for file name acceptance
@@ -84,7 +106,7 @@ def recursive_find(ignore_underscored, predicate_re):
 
     file_paths = []
 
-    for dir_path, dir_names, file_names in os.walk(os.getcwd()):
+    for dir_path, dir_names, file_names in os.walk(base_dir):
         # I can't think of a scenario where you'd ever want checkpoints.
         if os.path.basename(dir_path) == ".ipynb_checkpoints":
             continue
@@ -104,10 +126,13 @@ def recursive_find(ignore_underscored, predicate_re):
     return sorted(file_paths)  # For lexicographic sorting
 
 
-def parse_plan(args=None):
+def parse_plan(args=None, base_dir=None):
     """
     Parse the command line arguments and produce an execution plan.
     """
+    if base_dir is None:
+        base_dir = os.getcwd()
+
     parser = argparse.ArgumentParser("Merge a set of notebooks into one.")
 
     parser.add_argument("files",
@@ -117,14 +142,19 @@ def parse_plan(args=None):
     parser.add_argument("-o", "--output",
                         help="Write to the specified file")
 
-    parser.add_argument("-p", "--predicate-re",
-                        help="Regexp for filename acceptance")
+    parser.add_argument("-b", "--boundary",
+                        help="Add boundary metadata to header cells" +
+                             "(optionally by given key)",
+                        nargs="?",
+                        const="src_nb")
     parser.add_argument("-i", "--ignore-underscored",
                         help="Ignore notebooks with underscore prefix",
                         action="store_true")
     parser.add_argument("-r", "--recursive",
                         help="Merge all notebooks in subdirectories",
                         action="store_true")
+    parser.add_argument("-p", "--predicate-re",
+                        help="Regexp for filename acceptance")
     parser.add_argument("-v", "--verbose",
                         help="Print progress as processing",
                         action="store_true")
@@ -140,17 +170,23 @@ def parse_plan(args=None):
     if args.recursive:
         # If you specify any files, they are added first, in order.
         # This is useful for a header notebook of some sort.
-        file_paths.extend(recursive_find(args.ignore_underscored,
+        file_paths.extend(recursive_find(base_dir,
+                                         args.ignore_underscored,
                                          args.predicate_re))
     return {'notebooks': file_paths,
+            'base_dir': base_dir,
             'output_file': args.output,
+            'boundary_key': args.boundary,
             'verbose': args.verbose}
 
 
 def main():
     plan = parse_plan()
 
-    nb = merge_notebooks(plan['notebooks'])
+    nb = merge_notebooks(plan['base_dir'],
+                         plan['notebooks'],
+                         plan['verbose'],
+                         plan['boundary_key'])
 
     if plan['output_file'] is None:
         # See:

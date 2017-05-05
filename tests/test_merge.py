@@ -3,7 +3,7 @@ import sys
 import unittest
 
 from nbformat import reads
-from nbmerge import merge_notebooks, main, parse_plan
+from nbmerge import merge_notebooks, main, parse_plan, annotate_source_path
 
 
 SELF_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -25,7 +25,7 @@ class TestMerge(unittest.TestCase):
         self.assertEqual(merged.metadata['final_answer'], 42)
 
     def test_merge(self):
-        self._validate_merged_three(merge_notebooks(TARGET_NBS))
+        self._validate_merged_three(merge_notebooks(FIXTURES_DIR, TARGET_NBS))
 
     def test_parse_plan(self):
         header_nb = os.path.join(FIXTURES_DIR, "Header.ipynb")
@@ -39,6 +39,14 @@ class TestMerge(unittest.TestCase):
                           "1_Intro_In_Sub.ipynb", "2_Middle.ipynb"])
         self.assertTrue(plan["verbose"])
         self.assertEqual(plan["output_file"], "myfile.ipynb")
+
+    def test_annotate_source_path(self):
+        nb_path = os.path.join(FIXTURES_DIR, "1_Intro.ipynb")
+        with open(nb_path, "r") as fp:
+            nb = reads(fp.read(), as_version=4)
+        annotate_source_path(nb, SELF_DIR, nb_path, "xylophone")
+        self.assertEqual(nb.cells[0].metadata['xylophone'],
+                         os.path.join('fixtures', '1_Intro.ipynb'))
 
     def test_main(self):
         if not hasattr(sys.stdout, "getvalue"):
