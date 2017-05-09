@@ -50,6 +50,12 @@ named `_merged.ipynb`,
 
     nbmerge --recursive -i -p ".*intro.*" -o _merged.ipynb
 
+Finally, you can also instruct the script to demarcate the boundary
+between each original file with the `-b` / `-boundary [BOUNDARY]` flag.
+The `src_nb` value in the metadata for the first cell in each original
+notebook will then contain the path of the original notebook, relative to
+the cwd at the point of script execution.
+
 Lineage
 =======
 
@@ -82,3 +88,4 @@ Right now, only the basic (originally fperez's) functionality is
 implemented. However, I'm going to follow 
 `kynan's <https://github.com/kynan>`__ lead and slowly pull in functionality
 similar to his ``nbstripout`` package.
+

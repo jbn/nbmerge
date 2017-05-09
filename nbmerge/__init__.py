@@ -164,8 +164,7 @@ def parse_plan(args=None, base_dir=None):
     file_paths = args.files[:]
     for file_path in file_paths:
         if not os.path.exists(file_path):
-            print("Notebook `{}` does not exist".format(file_path))
-            sys.exit(1)
+            raise IOError("Notebook `{}` does not exist".format(file_path))
 
     if args.recursive:
         # If you specify any files, they are added first, in order.
@@ -180,8 +179,8 @@ def parse_plan(args=None, base_dir=None):
             'verbose': args.verbose}
 
 
-def main():
-    plan = parse_plan()
+def main(args=None):
+    plan = parse_plan(args or sys.argv)
 
     nb = merge_notebooks(plan['base_dir'],
                          plan['notebooks'],
