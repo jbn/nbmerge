@@ -15,7 +15,7 @@ __uri__ = "https://github.com/jbn/nbmerge"
 __doc__ = __description__ + " <" + __uri__ + ">"
 __license__ = "MIT"
 __copyright__ = "Copyright (c) 2017 John Bjorn Nelson"
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 # See Readme.rst for ancestry. My role is mostly packaging this up for
 # PyPI. The author is truely Fernando Perez (@fperez).
@@ -133,11 +133,9 @@ def parse_plan(args=None, base_dir=None):
     if base_dir is None:
         base_dir = os.getcwd()
 
-    parser = argparse.ArgumentParser("Merge a set of notebooks into one.")
+    parser = argparse.ArgumentParser(prog="nbmerge",
+                                     description=__description__)
 
-    parser.add_argument("files",
-                        help="Paths to files to merge",
-                        nargs="*")
 
     parser.add_argument("-o", "--output",
                         help="Write to the specified file")
@@ -159,9 +157,21 @@ def parse_plan(args=None, base_dir=None):
                         help="Print progress as processing",
                         action="store_true")
 
+    parser.add_argument("files",
+                        help="Paths to files to merge",
+                        nargs="*")
+
     args = parser.parse_args(args)
 
     file_paths = args.files[:]
+    # Didn't notice this until trying a pattern I don't use as much from the
+    # command line. The execution name is being collected as part of the
+    # filepaths. I don't know why. Perhaps something to do with using
+    # it as an entry point?
+    # XXX: TODO: KLUDGE
+    if file_paths and file_paths[0].endswith("nbmerge"):
+        file_paths = file_paths[1:]
+
     for file_path in file_paths:
         if not os.path.exists(file_path):
             raise IOError("Notebook `{}` does not exist".format(file_path))
