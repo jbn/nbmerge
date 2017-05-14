@@ -2,3 +2,4 @@ dist/
 nbmerge.egg-info/
 build/
 .coverage
+cli_test.ipynb
