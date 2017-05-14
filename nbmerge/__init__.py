@@ -15,7 +15,7 @@ __uri__ = "https://github.com/jbn/nbmerge"
 __doc__ = __description__ + " <" + __uri__ + ">"
 __license__ = "MIT"
 __copyright__ = "Copyright (c) 2017 John Bjorn Nelson"
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 # See Readme.rst for ancestry. My role is mostly packaging this up for
 # PyPI. The author is truely Fernando Perez (@fperez).
