@@ -136,7 +136,6 @@ def parse_plan(args=None, base_dir=None):
     parser = argparse.ArgumentParser(prog="nbmerge",
                                      description=__description__)
 
-
     parser.add_argument("-o", "--output",
                         help="Write to the specified file")
 
@@ -164,13 +163,6 @@ def parse_plan(args=None, base_dir=None):
     args = parser.parse_args(args)
 
     file_paths = args.files[:]
-    # Didn't notice this until trying a pattern I don't use as much from the
-    # command line. The execution name is being collected as part of the
-    # filepaths. I don't know why. Perhaps something to do with using
-    # it as an entry point?
-    # XXX: TODO: KLUDGE
-    if file_paths and file_paths[0].endswith("nbmerge"):
-        file_paths = file_paths[1:]
 
     if not file_paths and not args.recursive:
         parser.print_help()
@@ -194,7 +186,7 @@ def parse_plan(args=None, base_dir=None):
 
 
 def main(args=None):
-    plan = parse_plan(args or sys.argv)
+    plan = parse_plan(args)
 
     nb = merge_notebooks(plan['base_dir'],
                          plan['notebooks'],

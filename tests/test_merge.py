@@ -1,5 +1,4 @@
 import os
-import subprocess
 import sys
 import unittest
 
@@ -61,7 +60,7 @@ class TestMerge(unittest.TestCase):
         self.assertTrue(plan["verbose"])
         self.assertEqual(plan["output_file"], "myfile.ipynb")
         with self.assertRaises(IOError):
-            parse_plan(["nbmerge", "this-file-doesn't-exist"])
+            parse_plan(["this-file-doesn't-exist"])
 
     def test_annotate_source_path(self):
         nb_path = os.path.join(FIXTURES_DIR, "1_Intro.ipynb")
@@ -72,7 +71,7 @@ class TestMerge(unittest.TestCase):
                          os.path.join('fixtures', '1_Intro.ipynb'))
 
     def test_main_to_stdout(self):
-        main(['nbmerge'] + TARGET_NBS)
+        main(TARGET_NBS)
         self._validate_merged_three(reads(sys.stdout.getvalue(), as_version=4))
 
     def test_main_to_file(self):
