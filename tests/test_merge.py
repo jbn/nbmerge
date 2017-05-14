@@ -75,9 +75,6 @@ class TestMerge(unittest.TestCase):
         main(['nbmerge'] + TARGET_NBS)
         self._validate_merged_three(reads(sys.stdout.getvalue(), as_version=4))
 
-    # def test_shell(self):
-    #     subprocess.check_output(["nbmerge"] + TARGET_NBS, shell=True)
-
     def test_main_to_file(self):
         _, path = mkstemp()
 

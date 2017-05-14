@@ -1,7 +1,9 @@
 #!/bin/bash
 
-set -ev
+set -ev  # Fail on first non-zero return value.
 
+###############################################################################
+# Explicit file paths, explicit output.
 ###############################################################################
 
 nbmerge \
@@ -15,6 +17,8 @@ cmp cli_test.ipynb tests/fixtures/_gold.ipynb
 rm cli_test.ipynb
 
 ###############################################################################
+# Explicit file paths, stdout.
+###############################################################################
 
 nbmerge \
 	tests/fixtures/1_Intro.ipynb \
@@ -25,3 +29,11 @@ nbmerge \
 cmp cli_test.ipynb tests/fixtures/_gold.ipynb
 
 rm cli_test.ipynb
+
+
+###############################################################################
+# When called without any arguments, nbmerge should emit a usage message.
+###############################################################################
+
+(! nbmerge ) | grep -q usage
+

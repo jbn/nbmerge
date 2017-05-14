@@ -172,6 +172,10 @@ def parse_plan(args=None, base_dir=None):
     if file_paths and file_paths[0].endswith("nbmerge"):
         file_paths = file_paths[1:]
 
+    if not file_paths and not args.recursive:
+        parser.print_help()
+        sys.exit(1)
+
     for file_path in file_paths:
         if not os.path.exists(file_path):
             raise IOError("Notebook `{}` does not exist".format(file_path))
